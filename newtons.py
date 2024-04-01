@@ -1,20 +1,22 @@
 # Evaluates a complex polynomial at the point x, given the roots
-def eval_poly(x:complex, roots:list[complex]):
-    return sum([(x-roots[i])**(i+1) for i in range(len(roots))])
-
-# Evaluates the derivative at the point x for a complex polynomial, given the roots
-def eval_poly_deriv(x:complex, roots:list[complex]):
-    return sum([(i+1)*(x-roots[i])**(i) for i in range(len(roots)) if i])
+from math import prod
+from random import random
+from sympy import evalf, poly, I, solve, re, im
+from sympy.abc import p
 
 # Iterative implementation of newton's method
-def newtons_method(x:complex, roots:list[complex], iterations:int):
+def newtons_method(x, polynomial, polynomial_deriv, iterations:int, relaxation = 1):
     approx = x
     for iteration in range(iterations):
-        approx = complex(approx - eval_poly(approx, roots)/eval_poly_deriv(approx,roots))
-    return approx
+        deriv = polynomial_deriv(approx)
+        if deriv:
+            approx = approx - (polynomial(approx)*relaxation)/deriv
+        else:
+            break
+    return complex(approx)
 
 # Returns the squared magnitude of the vector a-b
-def magsqr(a: complex, b: complex):
+def magsqr(a, b):
     return (a.real-b.real)**2 + (a.imag-b.imag)**2
 
 # Linear interpolation
@@ -24,3 +26,6 @@ def lerp(v0,v1,t):
 # Maps a range of values to another range of values.
 def linearMap(a1,a2,b1,b2,x):
     return (b1+(x-a1)*(b2-b1)/(a2-a1))
+
+def randColor():
+    return [int(random()*255) for _ in range(3)]
